@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
 import '../static/AppNavbar.css';  // Correct the import path
 
+
 const AppNavbar = () => {
   const location = useLocation();
   const isUserRoute = location.pathname.startsWith('/users');

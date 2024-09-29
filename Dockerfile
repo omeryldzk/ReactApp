@@ -1,19 +1,14 @@
-# Use proper node version
-FROM node
-
+# Stage 1: Build the React application
+FROM node:16 AS build
 WORKDIR /app
-
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-
-# Install npm packages, copy rest of the repo and run build command
-RUN npm install --production
+COPY ./package*.json ./
+RUN npm install
 COPY . .
 RUN npm run build
 
-# Install Serve to serve static build folder
-RUN npm install -g serve
-
-EXPOSE 3000
-
-CMD [ "serve", "-s", "build" "3000:3000"]
+# Stage 2: Serve the built static files with Nginx
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
