@@ -1,19 +1,31 @@
-# Use proper node version
-FROM node
+# Use the slim version of Node 14 as our base
+FROM node:14-slim
 
-WORKDIR /app
+# Create a directory for our application in the container 
+RUN mkdir -p /usr/src/app
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+# Set this new directory as our working directory for subsequent instructions
+WORKDIR /usr/src/app
 
-# Install npm packages, copy rest of the repo and run build command
-RUN npm install --production
+# Copy all files in the current directory into the container
 COPY . .
-RUN npm run build
 
-# Install Serve to serve static build folder
+# Set the PYTHONPATH environment variable, which is occasionally necessary for certain node packages
+# 'PWD' is an environment variable that stores the path of the current working directory
+ENV PYTHONPATH=${PYTHONPATH}:${PWD}
+
+# Set the environment variable for the application's port
+# Change from 4200 to 8080 for Cloud Run
+ENV PORT 8080
+
+# Install 'serve', a static file serving package globally in the container
 RUN npm install -g serve
 
-EXPOSE 3000
+# Install all the node modules required by the React app
+RUN npm install
 
-CMD [ "serve", "-s", "build" "3000:3000"]
+# Build the React app
+RUN npm run build
+
+# Serve the 'build' directory on port 8080 using 'serve'
+CMD ["serve", "-s", "-l", "8080", "./build"]
