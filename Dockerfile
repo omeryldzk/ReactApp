@@ -16,7 +16,7 @@ ENV PYTHONPATH=${PYTHONPATH}:${PWD}
 
 # Set the environment variable for the application's port
 # Change from 4200 to 8080 for Cloud Run
-ENV PORT 8080
+ENV PORT 3000
 
 # Install 'serve', a static file serving package globally in the container
 RUN npm install -g serve
@@ -28,4 +28,4 @@ RUN npm install
 RUN npm run build
 
 # Serve the 'build' directory on port 8080 using 'serve'
-CMD ["serve", "-s", "-l", "8080", "./build"]
+CMD ["serve", "-s", "-l", "3000", "./build"]
